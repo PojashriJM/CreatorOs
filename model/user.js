@@ -29,6 +29,12 @@ const userSchema = new mongoose.Schema(
             default: "local",
         },
 
+        role: {
+            type: String,
+            enum: ["creator", "contributor", "admin"],
+            default: "creator",
+        },
+
         googleId: {
             type: String,
             sparse: true,
@@ -42,6 +48,11 @@ const userSchema = new mongoose.Schema(
         lastLoginAt: {
             type: Date,
         },
+        
+        collaborators: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        }],
     },
     {
         timestamps: true,
@@ -56,12 +67,16 @@ const mockUsers = [];
 
 class MockUserModel {
     constructor(data) {
-        this._id = data._id || 'mock-user-id-' + Math.random().toString(36).substr(2, 9);
+        this._id = data._id || new mongoose.Types.ObjectId().toString();
         this.name = data.name;
         this.email = data.email;
         this.password = data.password;
+        this.role = data.role || "creator";
+        this.authProvider = data.authProvider || "local";
+        this.collaborators = data.collaborators || [];
         this.createdAt = new Date();
         this.updatedAt = new Date();
+        this.lastLoginAt = data.lastLoginAt;
     }
 
     async save() {
@@ -117,10 +132,12 @@ class MockUserModel {
 (async () => {
     const hashed = await bcrypt.hash("Password123!", 10);
     mockUsers.push({
-        _id: "mock-test-user-id",
+        _id: "000000000000000000000001",
         name: "Test User",
-        email: "test@local",
+        email: "test@local.com",
         password: hashed,
+        role: "creator",
+        authProvider: "local",
         createdAt: new Date(),
         updatedAt: new Date()
     });

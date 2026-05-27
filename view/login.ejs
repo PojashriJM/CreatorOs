@@ -449,293 +449,56 @@
     </style>
 </head>
 <body>
+    <main class="auth-shell">
+        <section class="auth-card">
+            <a class="brand" href="/">
+                <span class="brand-mark">C</span>
+                <span>CreatorOS</span>
+            </a>
 
-    <!-- Custom cursor -->
-    <div id="cursor-outer"></div>
-    <div id="cursor-dot"></div>
-    <div id="cursor-label"></div>
-    <div id="spotlight"></div>
+            <h1>Welcome back</h1>
+            <p class="subtitle">Log in to continue managing your creator tools and shortened links.</p>
 
-    <!-- Floating shapes -->
-    <div class="shape shape-cube">
-        <div class="face face-front">C</div>
-        <div class="face face-back">OS</div>
-        <div class="face face-left"></div>
-        <div class="face face-right"></div>
-        <div class="face face-top"></div>
-        <div class="face face-bottom"></div>
-    </div>
-    <div class="shape shape-ring"></div>
-    <div class="shape shape-pill"></div>
-    <div class="shape shape-star">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 5 L61 35 L95 35 L68 57 L79 91 L50 70 L21 91 L32 57 L5 35 L39 35 Z" fill="#4da6ff" stroke="#0e0e0e" stroke-width="4"/>
-        </svg>
-    </div>
-    <div class="shape shape-triangle"></div>
+            <% if (typeof error !== 'undefined' && error) { %>
+                <p class="auth-error" role="alert"><%= error %></p>
+            <% } %>
 
-    <!-- Navbar -->
-    <nav class="navbar">
-        <a href="/" class="nav-brand">
-            <div class="nav-icon">C</div>
-            <div>
-                <div>CreatorOS</div>
-                <div class="nav-dot">UNIFIED DASHBOARD</div>
-            </div>
-        </a>
-        <span class="nav-dot">—</span>
-        <span style="font-family:'Space Mono',monospace;font-size:11px;color:#888;">New here?</span>
-        <a href="/signup" style="background:var(--black);border:2px solid var(--black);border-radius:999px;padding:6px 16px;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#fff;text-decoration:none;box-shadow:2px 2px 0 var(--teal);transition:transform .15s;" onmouseover="this.style.transform='translate(-1px,-1px)'" onmouseout="this.style.transform=''">Sign Up →</a>
-    </nav>
+            <a
+                class="google-login"
+                href="/auth/google"
+                data-loading-text="Connecting..."
+            >
+                <svg class="google-icon" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                    <path fill="#EA4335" d="M24 9.5c3.5 0 6.5 1.2 8.9 3.5l6.6-6.6C35.5 2.7 30.3.5 24 .5 14.8.5 6.9 5.8 3.1 13.5l7.7 6C12.6 13.6 17.8 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.6 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 2.9-2.2 5.4-4.8 7.1l7.4 5.7c4.3-4 7.3-9.9 7.3-16.8z"/>
+                    <path fill="#FBBC05" d="M10.8 28.5c-.5-1.4-.8-2.9-.8-4.5s.3-3.1.8-4.5l-7.7-6C1.5 16.7.6 20.2.6 24s.9 7.3 2.5 10.5l7.7-6z"/>
+                    <path fill="#34A853" d="M24 47.5c6.3 0 11.6-2.1 15.4-5.7L32 36.1c-2.1 1.4-4.7 2.2-8 2.2-6.2 0-11.4-4.1-13.2-9.8l-7.7 6C6.9 42.2 14.8 47.5 24 47.5z"/>
+                </svg>
+                <span>Continue with Google</span>
+            </a>
 
-    <!-- Main card -->
-    <div class="scene">
-        <div class="card-3d-wrapper" id="cardWrapper">
-            <div class="card">
-                <div class="badge">✦ WELCOME BACK</div>
+            <div class="divider">or</div>
 
-                <div class="card-header">
-                    <div class="logo-row">
-                        <div class="logo-icon">C</div>
-                        <div>
-                            <div class="logo-text">CreatorOS</div>
-                            <div class="logo-sub">Unified Dashboard</div>
-                        </div>
-                    </div>
-                    <div class="header-title">Welcome<br><em>back.</em></div>
-                    <div class="header-sub">Access your creator ecosystem. Hundreds of links waiting.</div>
-                    <div class="header-bar"></div>
-                </div>
+            <form action="/login" method="POST" id="email-login-form">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit" data-loading-text="Logging in...">Login</button>
+            </form>
 
-                <div class="card-body">
+            <form action="/login/contributor" method="POST" class="contributor-form" id="contributor-login-form">
+                <button type="submit" class="contributor-btn" data-loading-text="Continuing...">Continue as Contributor</button>
+            </form>
 
-                    <!-- Error (EJS) -->
-                    <!-- <% if (typeof error !== 'undefined' && error) { %>
-                    <div class="error-banner"><%= error %></div>
-                    <% } %> -->
-
-                    <!-- Google Button -->
-                    <div class="google-wrap">
-                        <a class="google-btn" href="/auth/google" id="google-btn">
-                            <svg class="google-icon" viewBox="0 0 48 48">
-                                <path fill="#EA4335" d="M24 9.5c3.5 0 6.5 1.2 8.9 3.5l6.6-6.6C35.5 2.7 30.3.5 24 .5 14.8.5 6.9 5.8 3.1 13.5l7.7 6C12.6 13.6 17.8 9.5 24 9.5z"/>
-                                <path fill="#4285F4" d="M46.6 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 2.9-2.2 5.4-4.8 7.1l7.4 5.7c4.3-4 7.3-9.9 7.3-16.8z"/>
-                                <path fill="#FBBC05" d="M10.8 28.5c-.5-1.4-.8-2.9-.8-4.5s.3-3.1.8-4.5l-7.7-6C1.5 16.7.6 20.2.6 24s.9 7.3 2.5 10.5l7.7-6z"/>
-                                <path fill="#34A853" d="M24 47.5c6.3 0 11.6-2.1 15.4-5.7L32 36.1c-2.1 1.4-4.7 2.2-8 2.2-6.2 0-11.4-4.1-13.2-9.8l-7.7 6C6.9 42.2 14.8 47.5 24 47.5z"/>
-                            </svg>
-                            <span id="google-label">Continue with Google</span>
-                        </a>
-                        <div class="google-btn-shadow"></div>
-                    </div>
-
-                    <div class="divider"><span>or sign in with email</span></div>
-
-                    <!-- Login form -->
-                    <form action="/login" method="POST" id="login-form">
-                        <div class="fields">
-                            <div class="field-group" id="fg1">
-                                <label class="field-label" for="f1">Email Address</label>
-                                <div class="field-wrap">
-                                    <span class="field-icon">✉️</span>
-                                    <input type="email" name="email" id="f1" placeholder="you@example.com" required autocomplete="email" />
-                                    <div class="field-shadow"></div>
-                                </div>
-                            </div>
-                            <div class="field-group" id="fg2">
-                                <label class="field-label" for="f2">Password</label>
-                                <div class="field-wrap">
-                                    <span class="field-icon">🔑</span>
-                                    <input type="password" name="password" id="f2" placeholder="Your password" required autocomplete="current-password" />
-                                    <button type="button" class="pw-toggle" id="pwToggle" aria-label="Toggle password">👁</button>
-                                    <div class="field-shadow"></div>
-                                </div>
-                            </div>
-                            <div class="btn-wrap" id="fg3">
-                                <button type="submit" class="btn" id="login-btn">
-                                    <span class="spinner" id="spinner"></span>
-                                    <span id="btnText">Login to Dashboard</span>
-                                    <span class="btn-arrow" id="btnArrow">→</span>
-                                </button>
-                                <div class="btn-shadow"></div>
-                            </div>
-                        </div>
-                    </form>
-
-                    <!-- Contributor form -->
-                    <form action="/login/contributor" method="POST" id="contributor-form">
-                        <div class="contrib-wrap" id="fg4">
-                            <button type="submit" class="btn-contrib" id="contrib-btn">
-                                <span class="spinner" id="contrib-spinner"></span>
-                                <span id="contribText">⚡ Login as Contributor</span>
-                            </button>
-                            <div class="contrib-shadow"></div>
-                        </div>
-                    </form>
-
-                    <p class="switch-link">Don't have an account? <a href="/signup">Create one here</a></p>
-                </div>
-
-                <!-- Ticker -->
-                <div class="ticker">
-                    <div class="ticker-dot"></div>
-                    <span><span class="ticker-count" id="liveCount">847</span> creators online</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
+            <p class="switch-link">
+                Don't have an account?
+                <a href="/signup">Signup</a>
+            </p>
+        </section>
+    </main>
     <script>
-    (function () {
-
-        // ═══════════════════════════════════════════════
-        // 1. CUSTOM CURSOR SYSTEM
-        // ═══════════════════════════════════════════════
-        const cursorOuter = document.getElementById('cursor-outer');
-        const cursorDot   = document.getElementById('cursor-dot');
-        const cursorLabel = document.getElementById('cursor-label');
-        const spotlight   = document.getElementById('spotlight');
-
-        let mouseX = -200, mouseY = -200, outerX = -200, outerY = -200;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX; mouseY = e.clientY;
-            cursorDot.style.left   = mouseX + 'px';
-            cursorDot.style.top    = mouseY + 'px';
-            cursorLabel.style.left = mouseX + 'px';
-            cursorLabel.style.top  = mouseY + 'px';
-            spotlight.style.left   = mouseX + 'px';
-            spotlight.style.top    = mouseY + 'px';
-            spawnTrail(mouseX, mouseY);
-        });
-
-        (function lerpCursor() {
-            outerX += (mouseX - outerX) * 0.12;
-            outerY += (mouseY - outerY) * 0.12;
-            cursorOuter.style.left = outerX + 'px';
-            cursorOuter.style.top  = outerY + 'px';
-            requestAnimationFrame(lerpCursor);
-        })();
-
-        // Cursor states — links
-        document.querySelectorAll('a:not(.google-btn), .badge, .nav-brand').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                document.body.classList.add('cursor-link');
-                cursorLabel.textContent = 'CLICK';
-                cursorLabel.style.opacity = '1';
-            });
-            el.addEventListener('mouseleave', () => {
-                document.body.classList.remove('cursor-link');
-                cursorLabel.style.opacity = '0';
-            });
-        });
-
-        // Google button special state
-        const googleBtn = document.getElementById('google-btn');
-        googleBtn.addEventListener('mouseenter', () => {
-            document.body.classList.add('cursor-google');
-            cursorLabel.textContent = 'GOOGLE';
-            cursorLabel.style.opacity = '1';
-        });
-        googleBtn.addEventListener('mouseleave', () => {
-            document.body.classList.remove('cursor-google');
-            cursorLabel.style.opacity = '0';
-        });
-
-        // Inputs
-        document.querySelectorAll('input').forEach(el => {
-            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-input'));
-            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-input'));
-        });
-
-        // Submit button
-        const loginBtn = document.getElementById('login-btn');
-        loginBtn.addEventListener('mouseenter', () => {
-            document.body.classList.add('cursor-btn');
-            cursorLabel.textContent = 'LOGIN →';
-            cursorLabel.style.opacity = '1';
-        });
-        loginBtn.addEventListener('mouseleave', () => {
-            document.body.classList.remove('cursor-btn');
-            cursorLabel.style.opacity = '0';
-        });
-
-        // Click ripple + dot burst
-        document.addEventListener('click', (e) => {
-            const ripple = document.createElement('div');
-            ripple.className = 'click-ripple';
-            ripple.style.left = e.clientX + 'px';
-            ripple.style.top  = e.clientY + 'px';
-            document.body.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
-            cursorDot.style.transform = 'translate(-50%,-50%) scale(2.5)';
-            cursorDot.style.opacity = '0.4';
-            setTimeout(() => {
-                cursorDot.style.transform = 'translate(-50%,-50%) scale(1)';
-                cursorDot.style.opacity = '1';
-            }, 200);
-        });
-
-        // Trail
-        const trailColors = ['#00c9a7', '#f5c842', '#4da6ff', '#ff4c4c'];
-        let trailCount = 0;
-        function spawnTrail(x, y) {
-            if (trailCount++ % 3 !== 0) return;
-            const dot = document.createElement('div');
-            dot.className = 'trail-dot';
-            const size = Math.random() * 5 + 3;
-            dot.style.cssText = `left:${x}px;top:${y}px;width:${size}px;height:${size}px;background:${trailColors[Math.floor(Math.random()*4)]};`;
-            document.body.appendChild(dot);
-            setTimeout(() => dot.remove(), 600);
-        }
-
-        // ═══════════════════════════════════════════════
-        // 2. MAGNETIC BUTTONS
-        // ═══════════════════════════════════════════════
-        loginBtn.addEventListener('mousemove', function(e) {
-            const r = this.getBoundingClientRect();
-            const dx = e.clientX - (r.left + r.width / 2);
-            const dy = e.clientY - (r.top + r.height / 2);
-            this.style.transform = `translate(${dx * 0.3}px, ${dy * 0.3}px)`;
-        });
-        loginBtn.addEventListener('mouseleave', function() { this.style.transform = ''; });
-
-        const contribBtn = document.getElementById('contrib-btn');
-        contribBtn.addEventListener('mousemove', function(e) {
-            const r = this.getBoundingClientRect();
-            const dx = e.clientX - (r.left + r.width / 2);
-            const dy = e.clientY - (r.top + r.height / 2);
-            this.style.transform = `translate(${dx * 0.25}px, ${dy * 0.25}px)`;
-        });
-        contribBtn.addEventListener('mouseleave', function() { this.style.transform = ''; });
-
-        // Magnetic field labels
-        document.querySelectorAll('.field-label').forEach(lbl => {
-            const wrap = lbl.closest('.field-group');
-            wrap.addEventListener('mouseenter', () => { lbl.style.transform = 'translateX(4px)'; lbl.style.color = 'var(--teal)'; });
-            wrap.addEventListener('mouseleave', () => { lbl.style.transform = ''; lbl.style.color = ''; });
-        });
-
-        // ═══════════════════════════════════════════════
-        // 3. 3D CARD TILT
-        // ═══════════════════════════════════════════════
-        const wrapper = document.getElementById('cardWrapper');
-        document.addEventListener('mousemove', (e) => {
-            const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-            const rx = ((e.clientY - cy) / cy) * -6;
-            const ry = ((e.clientX - cx) / cx) * 6;
-            wrapper.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
-        });
-        document.addEventListener('mouseleave', () => { wrapper.style.transform = ''; });
-
-        // ═══════════════════════════════════════════════
-        // 4. PASSWORD TOGGLE
-        // ═══════════════════════════════════════════════
-        const pwInput = document.getElementById('f2');
-        document.getElementById('pwToggle').addEventListener('click', function () {
-            const isText = pwInput.type === 'text';
-            pwInput.type = isText ? 'password' : 'text';
-            this.textContent = isText ? '👁' : '🙈';
-        });
+        const googleLogin = document.querySelector('.google-login');
+        const emailForm = document.querySelector('#email-login-form');
+        const contributorForm = document.querySelector('#contributor-login-form');
 
         // ═══════════════════════════════════════════════
         // 5. FORM SUBMITS
@@ -775,22 +538,41 @@
             });
         });
 
-        // ═══════════════════════════════════════════════
-        // 7. LIVE TICKER + STAGGER ENTRANCE
-        // ═══════════════════════════════════════════════
-        const countEl = document.getElementById('liveCount');
-        let base = 847;
-        setInterval(() => { base += Math.floor(Math.random() * 3) - 1; countEl.textContent = base; }, 2800);
+        contributorForm?.addEventListener('submit', async function (event) {
+            event.preventDefault();
 
-        ['fg1','fg2','fg3','fg4'].forEach((id, i) => {
-            const el = document.getElementById(id);
-            if (!el) return;
-            el.style.opacity = '0'; el.style.transform = 'translateY(16px)';
-            el.style.transition = `opacity .5s ${.6 + i * .1}s, transform .5s ${.6 + i * .1}s`;
-            setTimeout(() => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }, 50);
+            const submitButton = this.querySelector('button[type="submit"]');
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = submitButton.dataset.loadingText;
+            }
+
+            try {
+                const response = await fetch('/api/auth/contributor-login', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                    },
+                });
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Contributor login failed');
+                }
+
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                window.location.href = '/dashboard';
+            } catch (error) {
+                console.error(error);
+
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Continue as Contributor';
+                }
+            }
         });
-
-    })();
     </script>
 </body>
 </html>

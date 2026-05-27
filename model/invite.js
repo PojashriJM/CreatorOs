@@ -41,4 +41,33 @@ const inviteSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('Invite', inviteSchema);
+const MongooseInviteModel = mongoose.model('Invite', inviteSchema);
+
+const emptyInviteQuery = {
+  sort() {
+    return this;
+  },
+  limit() {
+    return this;
+  },
+  lean() {
+    return Promise.resolve([]);
+  },
+  then(resolve, reject) {
+    return Promise.resolve([]).then(resolve, reject);
+  },
+};
+
+const MockInviteModel = {
+  countDocuments: async () => 0,
+  findOne: async () => null,
+  findByIdAndDelete: async () => null,
+  find: () => emptyInviteQuery,
+};
+
+const InviteModel =
+  process.env.USE_MOCK_DB === "true"
+    ? MockInviteModel
+    : MongooseInviteModel;
+
+module.exports = InviteModel;

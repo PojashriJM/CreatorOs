@@ -102,12 +102,18 @@ const sendCollaboratorInvite = async (req, res, next) => {
 
 const renderDashboard = async (req, res, options = {}) => {
   const userDoc = await User.findById(req.user.id).select('name email').lean();
-  const invites = await Invite.find({ inviter: req.user.id }).lean();
+  
+  const [pending, accepted, expired] = await Promise.all([
+    Invite.countDocuments({ inviter: req.user.id, status: 'pending' }),
+    Invite.countDocuments({ inviter: req.user.id, status: 'accepted' }),
+    Invite.countDocuments({ inviter: req.user.id, status: 'expired' })
+  ]);
+  
   const inviteSummary = {
-    total: invites.length,
-    pending: invites.filter((invite) => invite.status === 'pending').length,
-    accepted: invites.filter((invite) => invite.status === 'accepted').length,
-    expired: invites.filter((invite) => invite.status === 'expired').length,
+    total: pending + accepted + expired,
+    pending,
+    accepted,
+    expired,
   };
 
   return res.render('dashboard', {
@@ -137,12 +143,10 @@ const acceptInvite = async (req, res, next) => {
       });
     }
 
-    invite.status = 'accepted';
-    invite.acceptedAt = new Date();
-    await invite.save();
-
+    // Don't auto-accept anymore if unauthenticated.
+    // Just render the pending state so they can copy the token and login.
     res.render('invite-accept', {
-      status: 'accepted',
+      status: 'pending',
       invite,
     });
   } catch (error) {
@@ -168,12 +172,26 @@ const acceptInviteFromDashboard = async (req, res, next) => {
       return renderDashboard(req, res, { inviteAcceptMessage: 'This invitation has already been accepted.' });
     }
 
+    // Accept the invite
     invite.status = 'accepted';
     invite.acceptedAt = new Date();
     await invite.save();
 
+    // Link the accounts: Add the current user to the inviter's collaborators
+    const inviter = await User.findById(invite.inviter);
+    if (inviter) {
+      if (!inviter.collaborators) inviter.collaborators = [];
+      
+      // Ensure we don't push duplicates
+      const isAlreadyCollaborator = inviter.collaborators.some(id => id.toString() === req.user.id.toString());
+      if (!isAlreadyCollaborator) {
+        inviter.collaborators.push(req.user.id);
+        await inviter.save();
+      }
+    }
+
     return renderDashboard(req, res, {
-      inviteAcceptMessage: `Invitation for ${invite.email} was accepted successfully!`,
+      inviteAcceptMessage: `Invitation for ${invite.email} was accepted successfully! You are now a collaborator.`,
     });
   } catch (error) {
     console.error('Dashboard invite acceptance failed:', error);
