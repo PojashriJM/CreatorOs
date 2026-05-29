@@ -75,6 +75,7 @@ const Invite = require('./model/invite');
 
 const port = process.env.PORT || 3000;
 const urlRoutes = require('./routes/url');
+const asyncHandler = require('./utils/asyncHandler');
 
 const suggestionRoutes = require('./routes/suggestionRoutes');
 // ... after your other app.use() lines:
@@ -142,7 +143,7 @@ function buildEmptyInviteSummary() {
     };
 }
 
-app.get("/dashboard", protect, async (req, res) => {
+app.get("/dashboard", protect, asyncHandler(async (req, res) => {
     const userDoc = isGuestContributor(req.user)
         ? null
         : await User.findById(req.user.id).select('name email').lean();
@@ -167,15 +168,15 @@ app.get("/dashboard", protect, async (req, res) => {
         inviteAcceptMessage: null,
         inviteAcceptError: null,
     });
-});
+}));
 
-app.get("/profile", protect, async (req, res) => {
+app.get("/profile", protect, asyncHandler(async (req, res) => {
     const userDoc = isGuestContributor(req.user)
         ? null
         : await User.findById(req.user.id).select('name email').lean();
 
     res.render("profile", { user: buildAccountViewModel(userDoc, req.user) });
-});
+}));
 
 // Service hub landing page
 app.get('/', (req, res) => {
@@ -263,7 +264,7 @@ app.post('/services/file-upload/upload', protect, preventContributorWrites, uplo
 });
 
 // Redirect for generated short URLs
-app.get('/u/:shortId', async (req, res) => {
+app.get('/u/:shortId', asyncHandler(async (req, res) => {
     const shortId = req.params.shortId;
 
     const entry = await Url.findOne({ shortId });
@@ -277,7 +278,7 @@ app.get('/u/:shortId', async (req, res) => {
     } else {
         return res.status(404).send('URL not found');
     }
-});
+}));
 
 // Centralized error handler
 const errorHandler = require('./middleware/errorHandler');
